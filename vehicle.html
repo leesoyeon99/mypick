@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>차량 예약</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f3f4f6;
+            padding: 24px;
+        }
+        
+        .vehicle-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .vehicle-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-available {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-in-use {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .view-tab {
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .view-tab:hover {
+            background: #f3f4f6;
+        }
+        
+        .view-tab.active {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .view-content {
+            display: none;
+        }
+        
+        .view-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="max-w-7xl mx-auto">
+        <!-- 헤더 -->
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">차량 예약</h1>
+                <p class="text-gray-600 mt-1">법인 차량을 예약하고 관리하세요</p>
+            </div>
+            <button onclick="openReservationModal()" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium">
+                + 새 예약
+            </button>
+        </div>
+        
+        <!-- 뷰 탭 -->
+        <div class="bg-white rounded-lg p-4 mb-6 shadow-sm">
+            <div class="flex gap-2 overflow-x-auto">
+                <div class="view-tab active" onclick="switchView('card')">카드뷰</div>
+                <div class="view-tab" onclick="switchView('monthly')">월간</div>
+                <div class="view-tab" onclick="switchView('weekly')">주간</div>
+                <div class="view-tab" onclick="switchView('daily')">일일</div>
+                <div class="view-tab" onclick="switchView('list')">목록</div>
+            </div>
+        </div>
+        
+        <!-- 카드뷰 -->
+        <div id="cardView" class="view-content active">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="vehicle-card">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-900">소나타</h3>
+                            <p class="text-sm text-gray-600 mt-1">12가 3456</p>
+                        </div>
+                        <span class="status-badge status-in-use">운행중</span>
+                    </div>
+                    <div class="text-6xl mb-4 text-center">🚗</div>
+                    <div class="space-y-2 text-sm text-gray-600">
+                        <div class="flex items-center justify-between">
+                            <span>⛽ 연료</span>
+                            <span class="font-medium">70%</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span>👤 운전자</span>
+                            <span class="font-medium">최대리</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span>⏰ 반납예정</span>
+                            <span class="font-medium">18:00</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="vehicle-card">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-900">그랜저</h3>
+                            <p class="text-sm text-gray-600 mt-1">34나 5678</p>
+                        </div>
+                        <span class="status-badge status-available">사용가능</span>
+                    </div>
+                    <div class="text-6xl mb-4 text-center">🚙</div>
+                    <div class="space-y-2 text-sm text-gray-600">
+                        <div class="flex items-center justify-between">
+                            <span>⛽ 연료</span>
+                            <span class="font-medium">95%</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span>📍 주차위치</span>
+                            <span class="font-medium">B1층 3번</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span>⏰ 다음예약</span>
+                            <span class="font-medium">내일 14:00</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="vehicle-card">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-900">카니발</h3>
+                            <p class="text-sm text-gray-600 mt-1">56다 7890</p>
+                        </div>
+                        <span class="status-badge status-in-use">운행중</span>
+                    </div>
+                    <div class="text-6xl mb-4 text-center">🚐</div>
+                    <div class="space-y-2 text-sm text-gray-600">
+                        <div class="flex items-center justify-between">
+                            <span>⛽ 연료</span>
+                            <span class="font-medium">60%</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span>👤 운전자</span>
+                            <span class="font-medium">박과장</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span>⏰ 반납예정</span>
+                            <span class="font-medium">17:00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 월간뷰 -->
+        <div id="monthlyView" class="view-content">
+            <div class="bg-white rounded-lg p-6 shadow-sm">
+                <h2 class="text-xl font-bold mb-4">월간 예약 현황 (10월)</h2>
+                <div class="space-y-4">
+                    <p class="text-gray-600">차량별 월간 예약 현황이 표시됩니다.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 주간뷰 -->
+        <div id="weeklyView" class="view-content">
+            <div class="bg-white rounded-lg p-6 shadow-sm">
+                <h2 class="text-xl font-bold mb-4">주간 일정</h2>
+                <div class="space-y-4">
+                    <p class="text-gray-600">차량별 주간 운행 일정이 표시됩니다.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 일일뷰 -->
+        <div id="dailyView" class="view-content">
+            <div class="bg-white rounded-lg p-6 shadow-sm">
+                <h2 class="text-xl font-bold mb-4">오늘의 운행 현황</h2>
+                <div class="space-y-4">
+                    <p class="text-gray-600">오늘의 차량 운행 현황이 표시됩니다.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 목록뷰 -->
+        <div id="listView" class="view-content">
+            <div class="bg-white rounded-lg p-6 shadow-sm">
+                <h2 class="text-xl font-bold mb-4">예약 목록</h2>
+                <div class="space-y-4">
+                    <p class="text-gray-600">전체 예약 목록이 표시됩니다.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 예약 모달 -->
+    <div id="reservationModal" class="modal">
+        <div class="modal-content">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold">차량 예약</h2>
+                <button onclick="closeReservationModal()" class="text-gray-500 hover:text-gray-700">✕</button>
+            </div>
+            
+            <form class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">차량 선택</label>
+                    <select class="w-full px-4 py-2 border rounded-lg">
+                        <option>소나타</option>
+                        <option>그랜저</option>
+                        <option>카니발</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">사용 날짜</label>
+                    <input type="date" class="w-full px-4 py-2 border rounded-lg">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">출발 시간</label>
+                        <input type="time" class="w-full px-4 py-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">반납 시간</label>
+                        <input type="time" class="w-full px-4 py-2 border rounded-lg">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">목적지</label>
+                    <input type="text" class="w-full px-4 py-2 border rounded-lg">
+                </div>
+                
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="closeReservationModal()" class="flex-1 px-6 py-3 border rounded-lg">취소</button>
+                    <button type="submit" class="flex-1 px-6 py-3 bg-green-600 text-white rounded-lg">예약하기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        function switchView(view) {
+            document.querySelectorAll('.view-content').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(view + 'View').classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        function openReservationModal() {
+            document.getElementById('reservationModal').classList.add('active');
+        }
+        
+        function closeReservationModal() {
+            document.getElementById('reservationModal').classList.remove('active');
+        }
+    </script>
+</body>
+</html>

@@ -27,5 +27,5 @@ dist-ssr
 *.sw?
 
 # Old HTML files (archived)
-*.html
+#*.html
 # docs/ - GitHub Pages용이므로 커밋 필요 (docs/는 제외하지 않음)

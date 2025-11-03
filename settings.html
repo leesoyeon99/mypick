@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 설정</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f3f4f6;
+            padding: 24px;
+        }
+        
+        .setting-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .tab-button {
+            padding: 12px 24px;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .tab-button:hover {
+            background: #f3f4f6;
+        }
+        
+        .tab-button.active {
+            border-bottom-color: #3b82f6;
+            color: #3b82f6;
+            font-weight: 600;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #cbd5e1;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: #3b82f6;
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+    </style>
+</head>
+<body>
+    <div class="max-w-7xl mx-auto">
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold text-gray-900">관리자 설정</h1>
+            <p class="text-gray-600 mt-1">시스템 설정을 관리하세요</p>
+        </div>
+        
+        <div class="bg-white rounded-t-lg shadow-sm overflow-x-auto">
+            <div class="flex border-b">
+                <div class="tab-button active" onclick="switchTab('system')">시스템 설정</div>
+                <div class="tab-button" onclick="switchTab('users')">사용자 관리</div>
+                <div class="tab-button" onclick="switchTab('rooms')">회의실 관리</div>
+                <div class="tab-button" onclick="switchTab('vehicles')">차량 관리</div>
+                <div class="tab-button" onclick="switchTab('templates')">템플릿 관리</div>
+            </div>
+        </div>
+        
+        <!-- 시스템 설정 -->
+        <div id="systemTab" class="tab-content active">
+            <div class="setting-card rounded-t-none">
+                <h2 class="text-lg font-bold mb-6">시스템 설정</h2>
+                <div class="space-y-6">
+                    <div class="flex justify-between items-center pb-4 border-b">
+                        <div>
+                            <div class="font-medium">시스템 이름</div>
+                            <div class="text-sm text-gray-600">그룹웨어 시스템 이름 설정</div>
+                        </div>
+                        <input type="text" value="T-IME" class="px-4 py-2 border rounded-lg w-64">
+                    </div>
+                    
+
+
+
+
+                    <div class="flex justify-between items-center pb-4 border-b">
+                        <div>
+                            <div class="font-medium">알림 기능</div>
+                            <div class="text-sm text-gray-600">예약 및 승인 알림 활성화</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-3 mt-6 pt-6 border-t">
+                    <button class="px-6 py-2 border rounded-lg hover:bg-gray-50">취소</button>
+                    <button class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">저장</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 사용자 관리 -->
+        <div id="usersTab" class="tab-content">
+            <div class="setting-card rounded-t-none">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-lg font-bold">사용자 관리</h2>
+                    <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">+ 사용자 추가</button>
+                </div>
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="text-left py-3 px-4">이름</th>
+                            <th class="text-left py-3 px-4">부서</th>
+                            <th class="text-left py-3 px-4">직급</th>
+                            <th class="text-left py-3 px-4">권한</th>
+                            <th class="text-left py-3 px-4">관리</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y">
+                        <tr class="hover:bg-gray-50">
+                            <td class="py-3 px-4">홍길동</td>
+                            <td class="py-3 px-4">개발팀</td>
+                            <td class="py-3 px-4">부장</td>
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-red-100 text-red-700 rounded text-xs">관리자</span></td>
+                            <td class="py-3 px-4"><button class="text-blue-600 text-sm hover:underline">수정</button></td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="py-3 px-4">김철수</td>
+                            <td class="py-3 px-4">영업팀</td>
+                            <td class="py-3 px-4">과장</td>
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">일반</span></td>
+                            <td class="py-3 px-4"><button class="text-blue-600 text-sm hover:underline">수정</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- 회의실 관리 -->
+        <div id="roomsTab" class="tab-content">
+            <div class="setting-card rounded-t-none">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-lg font-bold">회의실 관리</h2>
+                    <button onclick="openRoomModal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">+ 회의실 추가</button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="roomList">
+                    <div class="border rounded-lg p-4 hover:bg-gray-50">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="font-bold text-lg">3층 회의실</h3>
+                            <div class="flex gap-2">
+                                <button class="text-blue-600 text-sm hover:underline">수정</button>
+                                <button class="text-red-600 text-sm hover:underline">삭제</button>
+                            </div>
+                        </div>
+                        <div class="space-y-2 text-sm text-gray-600">
+                            <div class="flex justify-between">
+                                <span>최대 인원</span>
+                                <span class="font-medium text-gray-900">6명</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>시설</span>
+                                <span class="font-medium text-gray-900">프로젝터, 화이트보드</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>예약 방식</span>
+                                <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">자동 예약</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="border rounded-lg p-4 hover:bg-gray-50">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="font-bold text-lg">6층 회의실</h3>
+                            <div class="flex gap-2">
+                                <button class="text-blue-600 text-sm hover:underline">수정</button>
+                                <button class="text-red-600 text-sm hover:underline">삭제</button>
+                            </div>
+                        </div>
+                        <div class="space-y-2 text-sm text-gray-600">
+                            <div class="flex justify-between">
+                                <span>최대 인원</span>
+                                <span class="font-medium text-gray-900">12명</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>시설</span>
+                                <span class="font-medium text-gray-900">빔프로젝터, 음향</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>예약 방식</span>
+                                <span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-xs">승인 필요</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="border rounded-lg p-4 hover:bg-gray-50">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="font-bold text-lg">13층 회의실</h3>
+                            <div class="flex gap-2">
+                                <button class="text-blue-600 text-sm hover:underline">수정</button>
+                                <button class="text-red-600 text-sm hover:underline">삭제</button>
+                            </div>
+                        </div>
+                        <div class="space-y-2 text-sm text-gray-600">
+                            <div class="flex justify-between">
+                                <span>최대 인원</span>
+                                <span class="font-medium text-gray-900">15명</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>시설</span>
+                                <span class="font-medium text-gray-900">빔, 음향, 화상회의</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>예약 방식</span>
+                                <span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-xs">승인 필요</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 차량 관리 -->
+        <div id="vehiclesTab" class="tab-content">
+            <div class="setting-card rounded-t-none">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-lg font-bold">차량 관리</h2>
+                    <button onclick="openVehicleModal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">+ 차량 추가</button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="vehicleList">
+                    <div class="border rounded-lg p-4 hover:bg-gray-50">
+                        <div class="text-center mb-3">
+                            <div class="text-4xl mb-2">🚗</div>
+                            <h3 class="font-bold">소나타</h3>
+                            <p class="text-sm text-gray-600">12가 3456</p>
+                        </div>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">연식</span>
+                                <span class="font-medium">2023년</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">예약 방식</span>
+                                <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">자동 예약</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 mt-4">
+                            <button class="flex-1 py-2 text-sm border rounded-lg hover:bg-gray-50">수정</button>
+                            <button class="flex-1 py-2 text-sm border border-red-300 text-red-600 rounded-lg hover:bg-red-50">삭제</button>
+                        </div>
+                    </div>
+                    
+                    <div class="border rounded-lg p-4 hover:bg-gray-50">
+                        <div class="text-center mb-3">
+                            <div class="text-4xl mb-2">🚙</div>
+                            <h3 class="font-bold">그랜저</h3>
+                            <p class="text-sm text-gray-600">34나 5678</p>
+                        </div>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">연식</span>
+                                <span class="font-medium">2024년</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">예약 방식</span>
+                                <span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-xs">승인 필요</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 mt-4">
+                            <button class="flex-1 py-2 text-sm border rounded-lg hover:bg-gray-50">수정</button>
+                            <button class="flex-1 py-2 text-sm border border-red-300 text-red-600 rounded-lg hover:bg-red-50">삭제</button>
+                        </div>
+                    </div>
+                    
+                    <div class="border rounded-lg p-4 hover:bg-gray-50">
+                        <div class="text-center mb-3">
+                            <div class="text-4xl mb-2">🚐</div>
+                            <h3 class="font-bold">카니발</h3>
+                            <p class="text-sm text-gray-600">56다 7890</p>
+                        </div>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">연식</span>
+                                <span class="font-medium">2023년</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">예약 방식</span>
+                                <span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-xs">승인 필요</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 mt-4">
+                            <button class="flex-1 py-2 text-sm border rounded-lg hover:bg-gray-50">수정</button>
+                            <button class="flex-1 py-2 text-sm border border-red-300 text-red-600 rounded-lg hover:bg-red-50">삭제</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 템플릿 관리 -->
+        <div id="templatesTab" class="tab-content">
+            <div class="setting-card rounded-t-none">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-lg font-bold">전광판 템플릿 관리</h2>
+                    <button onclick="openTemplateModal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">+ 템플릿 추가</button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="border-2 border-blue-200 rounded-lg p-4 bg-blue-50">
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="text-3xl">📰</div>
+                                <div>
+                                    <h3 class="font-bold">회사 소식</h3>
+                                    <p class="text-xs text-gray-600">기본 템플릿</p>
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 bg-blue-600 text-white rounded text-xs">활성</span>
+                        </div>
+                        <div class="text-sm text-gray-600 mb-3">
+                            <p>회사의 최신 소식과 공지사항을 전달하는 템플릿입니다.</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="flex-1 py-2 text-sm border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-100">미리보기</button>
+                            <button class="flex-1 py-2 text-sm border rounded-lg hover:bg-gray-50">수정</button>
+                        </div>
+                    </div>
+                    
+                    <div class="border-2 border-purple-200 rounded-lg p-4 bg-purple-50">
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="text-3xl">🎬</div>
+                                <div>
+                                    <h3 class="font-bold">홍보 영상</h3>
+                                    <p class="text-xs text-gray-600">기본 템플릿</p>
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 bg-purple-600 text-white rounded text-xs">활성</span>
+                        </div>
+                        <div class="text-sm text-gray-600 mb-3">
+                            <p>회사 홍보 영상과 미디어 콘텐츠를 재생하는 템플릿입니다.</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="flex-1 py-2 text-sm border border-purple-600 text-purple-600 rounded-lg hover:bg-purple-100">미리보기</button>
+                            <button class="flex-1 py-2 text-sm border rounded-lg hover:bg-gray-50">수정</button>
+                        </div>
+                    </div>
+                    
+                    <div class="border-2 border-green-200 rounded-lg p-4 bg-green-50">
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="text-3xl">📅</div>
+                                <div>
+                                    <h3 class="font-bold">회의 안내</h3>
+                                    <p class="text-xs text-gray-600">기본 템플릿</p>
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 bg-green-600 text-white rounded text-xs">활성</span>
+                        </div>
+                        <div class="text-sm text-gray-600 mb-3">
+                            <p>오늘의 회의 일정과 회의실 현황을 보여주는 템플릿입니다.</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="flex-1 py-2 text-sm border border-green-600 text-green-600 rounded-lg hover:bg-green-100">미리보기</button>
+                            <button class="flex-1 py-2 text-sm border rounded-lg hover:bg-gray-50">수정</button>
+                        </div>
+                    </div>
+                    
+                    <div class="border-2 border-yellow-200 rounded-lg p-4 bg-yellow-50">
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="text-3xl">👔</div>
+                                <div>
+                                    <h3 class="font-bold">VIP 안내</h3>
+                                    <p class="text-xs text-gray-600">기본 템플릿</p>
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 bg-gray-400 text-white rounded text-xs">비활성</span>
+                        </div>
+                        <div class="text-sm text-gray-600 mb-3">
+                            <p>VIP 방문 시 환영 메시지와 안내를 표시하는 템플릿입니다.</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="flex-1 py-2 text-sm border border-yellow-600 text-yellow-600 rounded-lg hover:bg-yellow-100">미리보기</button>
+                            <button class="flex-1 py-2 text-sm border rounded-lg hover:bg-gray-50">수정</button>
+                        </div>
+                    </div>
+                    
+                    <div class="border-2 border-pink-200 rounded-lg p-4 bg-pink-50">
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="text-3xl">🎂</div>
+                                <div>
+                                    <h3 class="font-bold">생일 축하</h3>
+                                    <p class="text-xs text-gray-600">기본 템플릿</p>
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 bg-pink-600 text-white rounded text-xs">활성</span>
+                        </div>
+                        <div class="text-sm text-gray-600 mb-3">
+                            <p>생일을 맞은 임직원을 축하하는 메시지 템플릿입니다.</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="flex-1 py-2 text-sm border border-pink-600 text-pink-600 rounded-lg hover:bg-pink-100">미리보기</button>
+                            <button class="flex-1 py-2 text-sm border rounded-lg hover:bg-gray-50">수정</button>
+                        </div>
+                    </div>
+                    
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 flex items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-50" onclick="openTemplateModal()">
+                        <div class="text-center">
+                            <div class="text-4xl mb-2">➕</div>
+                            <p class="text-sm font-medium text-gray-600">새 템플릿 추가</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 회의실 추가/수정 모달 -->
+    <div id="roomModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">회의실 추가</h2>
+                <button onclick="closeRoomModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+            </div>
+            <form class="space-y-4" onsubmit="handleRoomSubmit(event)">
+                <div>
+                    <label class="block text-sm font-medium mb-2">회의실 이름 <span class="text-red-500">*</span></label>
+                    <input type="text" placeholder="예: 7층 회의실" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">위치/층 <span class="text-red-500">*</span></label>
+                    <input type="text" placeholder="예: 본관 7층" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">최대 수용 인원 <span class="text-red-500">*</span></label>
+                    <input type="number" min="1" placeholder="예: 10" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">시설 및 장비</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="w-4 h-4">
+                            <span class="text-sm">프로젝터</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="w-4 h-4">
+                            <span class="text-sm">화이트보드</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="w-4 h-4">
+                            <span class="text-sm">TV</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="w-4 h-4">
+                            <span class="text-sm">음향시스템</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="w-4 h-4">
+                            <span class="text-sm">화상회의</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="w-4 h-4">
+                            <span class="text-sm">무선 마이크</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">예약 방식 <span class="text-red-500">*</span></label>
+                    <div class="flex gap-4">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="roomReservationType" value="auto" checked class="w-4 h-4">
+                            <div>
+                                <div class="font-medium">자동 예약</div>
+                                <div class="text-xs text-gray-500">예약 즉시 승인</div>
+                            </div>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="roomReservationType" value="approval" class="w-4 h-4">
+                            <div>
+                                <div class="font-medium">승인 필요</div>
+                                <div class="text-xs text-gray-500">관리자 승인 후 예약</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">비고</label>
+                    <textarea rows="3" placeholder="추가 정보 입력" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                </div>
+                
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="closeRoomModal()" class="flex-1 px-6 py-3 border rounded-lg hover:bg-gray-50">취소</button>
+                    <button type="submit" class="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">추가하기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- 차량 추가/수정 모달 -->
+    <div id="vehicleModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">차량 추가</h2>
+                <button onclick="closeVehicleModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+            </div>
+            <form class="space-y-4" onsubmit="handleVehicleSubmit(event)">
+                <div>
+                    <label class="block text-sm font-medium mb-2">차량 이름 <span class="text-red-500">*</span></label>
+                    <input type="text" placeholder="예: 쏘나타" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">차량 번호 <span class="text-red-500">*</span></label>
+                    <input type="text" placeholder="예: 12가 3456" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">차량 종류</label>
+                        <select class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option>승용차</option>
+                            <option>SUV</option>
+                            <option>승합차</option>
+                            <option>트럭</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">연식</label>
+                        <input type="number" min="2000" max="2030" placeholder="예: 2024" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">최대 탑승 인원</label>
+                        <input type="number" min="1" placeholder="예: 5" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">연료 종류</label>
+                        <select class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option>휘발유</option>
+                            <option>경유</option>
+                            <option>LPG</option>
+                            <option>전기</option>
+                            <option>하이브리드</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">주차 위치</label>
+                    <input type="text" placeholder="예: 지하 1층 3번" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">예약 방식 <span class="text-red-500">*</span></label>
+                    <div class="flex gap-4">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="vehicleReservationType" value="auto" class="w-4 h-4">
+                            <div>
+                                <div class="font-medium">자동 예약</div>
+                                <div class="text-xs text-gray-500">예약 즉시 승인</div>
+                            </div>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="vehicleReservationType" value="approval" checked class="w-4 h-4">
+                            <div>
+                                <div class="font-medium">승인 필요</div>
+                                <div class="text-xs text-gray-500">관리자 승인 후 예약</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">비고</label>
+                    <textarea rows="3" placeholder="추가 정보 입력 (보험, 정비 내역 등)" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                </div>
+                
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="closeVehicleModal()" class="flex-1 px-6 py-3 border rounded-lg hover:bg-gray-50">취소</button>
+                    <button type="submit" class="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">추가하기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- 템플릿 추가/수정 모달 -->
+    <div id="templateModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">템플릿 추가</h2>
+                <button onclick="closeTemplateModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+            </div>
+            <form class="space-y-4" onsubmit="handleTemplateSubmit(event)">
+                <div>
+                    <label class="block text-sm font-medium mb-2">템플릿 이름 <span class="text-red-500">*</span></label>
+                    <input type="text" placeholder="예: 신년 인사" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">아이콘</label>
+                    <div class="grid grid-cols-6 gap-3">
+                        <button type="button" class="text-3xl p-3 border rounded-lg hover:bg-blue-50 hover:border-blue-500">📰</button>
+                        <button type="button" class="text-3xl p-3 border rounded-lg hover:bg-blue-50 hover:border-blue-500">🎬</button>
+                        <button type="button" class="text-3xl p-3 border rounded-lg hover:bg-blue-50 hover:border-blue-500">📅</button>
+                        <button type="button" class="text-3xl p-3 border rounded-lg hover:bg-blue-50 hover:border-blue-500">👔</button>
+                        <button type="button" class="text-3xl p-3 border rounded-lg hover:bg-blue-50 hover:border-blue-500">🎂</button>
+                        <button type="button" class="text-3xl p-3 border rounded-lg hover:bg-blue-50 hover:border-blue-500">🎉</button>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">설명</label>
+                    <textarea rows="3" placeholder="템플릿 설명 입력" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">레이아웃</label>
+                    <select class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option>헤더 + 본문</option>
+                        <option>전체 이미지</option>
+                        <option>좌우 분할</option>
+                        <option>상하 분할</option>
+                        <option>그리드</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">테마 색상</label>
+                    <div class="grid grid-cols-6 gap-3">
+                        <button type="button" class="w-full h-10 bg-blue-500 rounded-lg border-2 border-transparent hover:border-gray-800"></button>
+                        <button type="button" class="w-full h-10 bg-purple-500 rounded-lg border-2 border-transparent hover:border-gray-800"></button>
+                        <button type="button" class="w-full h-10 bg-green-500 rounded-lg border-2 border-transparent hover:border-gray-800"></button>
+                        <button type="button" class="w-full h-10 bg-yellow-500 rounded-lg border-2 border-transparent hover:border-gray-800"></button>
+                        <button type="button" class="w-full h-10 bg-red-500 rounded-lg border-2 border-transparent hover:border-gray-800"></button>
+                        <button type="button" class="w-full h-10 bg-pink-500 rounded-lg border-2 border-transparent hover:border-gray-800"></button>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">상태</label>
+                    <div class="flex gap-4">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="templateStatus" value="active" checked class="w-4 h-4">
+                            <span>활성</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="templateStatus" value="inactive" class="w-4 h-4">
+                            <span>비활성</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="closeTemplateModal()" class="flex-1 px-6 py-3 border rounded-lg hover:bg-gray-50">취소</button>
+                    <button type="submit" class="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">추가하기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tab + 'Tab').classList.add('active');
+        }
+        
+        // 회의실 모달
+        function openRoomModal() {
+            document.getElementById('roomModal').classList.add('active');
+        }
+        
+        function closeRoomModal() {
+            document.getElementById('roomModal').classList.remove('active');
+        }
+        
+        function handleRoomSubmit(event) {
+            event.preventDefault();
+            alert('회의실이 추가되었습니다.');
+            closeRoomModal();
+        }
+        
+        // 차량 모달
+        function openVehicleModal() {
+            document.getElementById('vehicleModal').classList.add('active');
+        }
+        
+        function closeVehicleModal() {
+            document.getElementById('vehicleModal').classList.remove('active');
+        }
+        
+        function handleVehicleSubmit(event) {
+            event.preventDefault();
+            alert('차량이 추가되었습니다.');
+            closeVehicleModal();
+        }
+        
+        // 템플릿 모달
+        function openTemplateModal() {
+            document.getElementById('templateModal').classList.add('active');
+        }
+        
+        function closeTemplateModal() {
+            document.getElementById('templateModal').classList.remove('active');
+        }
+        
+        function handleTemplateSubmit(event) {
+            event.preventDefault();
+            alert('템플릿이 추가되었습니다.');
+            closeTemplateModal();
+        }
+    </script>
+</body>
+</html>

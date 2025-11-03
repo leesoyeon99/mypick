@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>경조사 관리</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f3f4f6;
+            padding: 24px;
+        }
+        
+        .event-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+        }
+        
+        .event-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: between;
+            padding: 12px;
+            background: #f9fafb;
+            border-radius: 8px;
+            margin-top: 8px;
+        }
+        
+        .file-item:hover {
+            background: #f3f4f6;
+        }
+    </style>
+</head>
+<body>
+    <div class="max-w-7xl mx-auto">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">경조사 관리</h1>
+                <p class="text-gray-600 mt-1">경조사를 신청하고 관리하세요</p>
+            </div>
+            <button onclick="openModal()" class="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium">
+                + 경조사 신청
+            </button>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
+            <div class="event-card text-center cursor-pointer">
+                <div class="text-4xl mb-2">💍</div>
+                <div class="font-medium">결혼</div>
+                <div class="text-xs text-gray-500 mt-1">청첩장</div>
+            </div>
+            <div class="event-card text-center cursor-pointer">
+                <div class="text-4xl mb-2">👶</div>
+                <div class="font-medium">출산</div>
+                <div class="text-xs text-gray-500 mt-1">출생증명서</div>
+            </div>
+            <div class="event-card text-center cursor-pointer">
+                <div class="text-4xl mb-2">🕯️</div>
+                <div class="font-medium">조문</div>
+                <div class="text-xs text-gray-500 mt-1">부고장</div>
+            </div>
+            <div class="event-card text-center cursor-pointer">
+                <div class="text-4xl mb-2">🎂</div>
+                <div class="font-medium">회갑</div>
+                <div class="text-xs text-gray-500 mt-1">초청장</div>
+            </div>
+            <div class="event-card text-center cursor-pointer">
+                <div class="text-4xl mb-2">🎊</div>
+                <div class="font-medium">고희</div>
+                <div class="text-xs text-gray-500 mt-1">초청장</div>
+            </div>
+            <div class="event-card text-center cursor-pointer">
+                <div class="text-4xl mb-2">🎉</div>
+                <div class="font-medium">미수</div>
+                <div class="text-xs text-gray-500 mt-1">초청장</div>
+            </div>
+            <div class="event-card text-center cursor-pointer">
+                <div class="text-4xl mb-2">🎈</div>
+                <div class="font-medium">졸수</div>
+                <div class="text-xs text-gray-500 mt-1">초청장</div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-sm">
+            <div class="p-6 border-b">
+                <h2 class="text-xl font-bold">최근 경조사</h2>
+            </div>
+            <div class="divide-y">
+                <div class="p-6 hover:bg-gray-50">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="font-bold">김철수 과장 부친상</div>
+                                <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm">진행중</span>
+                            </div>
+                            <div class="text-sm text-gray-600 mb-2">조문 • 2025-10-28</div>
+                            <div class="flex items-center gap-2 text-sm text-gray-500">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                <span>부고장.pdf</span>
+                                <button class="text-blue-600 hover:underline ml-2">다운로드</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-6 hover:bg-gray-50">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="font-bold">이영희 대리 결혼</div>
+                                <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">예정</span>
+                            </div>
+                            <div class="text-sm text-gray-600 mb-2">결혼 • 2025-10-25</div>
+                            <div class="flex items-center gap-2 text-sm text-gray-500">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                <span>청첩장.jpg</span>
+                                <button class="text-blue-600 hover:underline ml-2">다운로드</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-6 hover:bg-gray-50">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="font-bold">박민수 부장 자녀 출산</div>
+                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">완료</span>
+                            </div>
+                            <div class="text-sm text-gray-600 mb-2">출산 • 2025-10-20</div>
+                            <div class="flex items-center gap-2 text-sm text-gray-500">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                <span>출생증명서.pdf</span>
+                                <button class="text-blue-600 hover:underline ml-2">다운로드</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">경조사 신청</h2>
+                <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700 text-2xl leading-none">&times;</button>
+            </div>
+            <form class="space-y-4" onsubmit="handleSubmit(event)">
+                <div>
+                    <label class="block text-sm font-medium mb-2">경조사 유형</label>
+                    <select id="eventType" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <option>결혼</option>
+                        <option>출산</option>
+                        <option>조문</option>
+                        <option>회갑</option>
+                        <option>고희</option>
+                        <option>미수</option>
+                        <option>졸수</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">신청자</label>
+                    <input type="text" value="홍길동" class="w-full px-4 py-2 border rounded-lg bg-gray-50" readonly>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">관계</label>
+                    <input type="text" placeholder="예: 본인, 부친, 모친, 자녀 등" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">날짜</label>
+                    <input type="date" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">장소</label>
+                    <input type="text" placeholder="경조사 장소" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">시간</label>
+                    <input type="time" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">증빙 서류 첨부 <span class="text-red-500">*</span></label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-purple-500 transition-colors cursor-pointer" onclick="document.getElementById('fileInput').click()">
+                        <input type="file" id="fileInput" class="hidden" accept=".pdf,.jpg,.jpeg,.png" multiple onchange="handleFileSelect(event)">
+                        <div id="uploadArea">
+                            <svg class="w-12 h-12 mx-auto text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                            </svg>
+                            <p class="text-sm font-medium text-gray-700 mb-1">클릭하거나 파일을 드래그하세요</p>
+                            <p class="text-xs text-gray-500">청첩장, 부고장, 출생증명서 등 (PDF, JPG, PNG • 최대 10MB)</p>
+                        </div>
+                    </div>
+                    <div id="fileList" class="mt-3 space-y-2"></div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">비고</label>
+                    <textarea rows="3" placeholder="추가 안내사항을 입력하세요" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"></textarea>
+                </div>
+                
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="closeModal()" class="flex-1 px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium">취소</button>
+                    <button type="submit" class="flex-1 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium">신청하기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        let selectedFiles = [];
+        
+        function openModal() {
+            document.getElementById('modal').classList.add('active');
+        }
+        
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+            selectedFiles = [];
+            document.getElementById('fileList').innerHTML = '';
+        }
+        
+        function handleFileSelect(event) {
+            const files = Array.from(event.target.files);
+            
+            files.forEach(file => {
+                // 파일 크기 체크 (10MB)
+                if (file.size > 10 * 1024 * 1024) {
+                    alert(`${file.name}은(는) 10MB를 초과합니다.`);
+                    return;
+                }
+                
+                // 중복 체크
+                if (selectedFiles.find(f => f.name === file.name)) {
+                    return;
+                }
+                
+                selectedFiles.push(file);
+            });
+            
+            displayFiles();
+        }
+        
+        function displayFiles() {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '';
+            
+            if (selectedFiles.length === 0) {
+                return;
+            }
+            
+            selectedFiles.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item flex items-center justify-between';
+                
+                const fileInfo = document.createElement('div');
+                fileInfo.className = 'flex items-center gap-3 flex-1';
+                
+                // 파일 아이콘
+                const icon = document.createElement('div');
+                icon.innerHTML = `
+                    <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                `;
+                
+                // 파일 정보
+                const info = document.createElement('div');
+                info.className = 'flex-1 min-w-0';
+                info.innerHTML = `
+                    <p class="text-sm font-medium text-gray-900 truncate">${file.name}</p>
+                    <p class="text-xs text-gray-500">${formatFileSize(file.size)}</p>
+                `;
+                
+                // 삭제 버튼
+                const deleteBtn = document.createElement('button');
+                deleteBtn.type = 'button';
+                deleteBtn.className = 'text-red-600 hover:text-red-700 p-1';
+                deleteBtn.innerHTML = `
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                `;
+                deleteBtn.onclick = () => removeFile(index);
+                
+                fileInfo.appendChild(icon);
+                fileInfo.appendChild(info);
+                fileItem.appendChild(fileInfo);
+                fileItem.appendChild(deleteBtn);
+                fileList.appendChild(fileItem);
+            });
+        }
+        
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            displayFiles();
+        }
+        
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+        
+        function handleSubmit(event) {
+            event.preventDefault();
+            
+            if (selectedFiles.length === 0) {
+                alert('증빙 서류를 첨부해주세요.');
+                return;
+            }
+            
+            alert('경조사 신청이 완료되었습니다.');
+            closeModal();
+        }
+        
+        // 드래그 앤 드롭 기능
+        const uploadArea = document.querySelector('[onclick*="fileInput"]');
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('border-purple-500', 'bg-purple-50');
+        });
+        
+        uploadArea.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('border-purple-500', 'bg-purple-50');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('border-purple-500', 'bg-purple-50');
+            
+            const files = Array.from(e.dataTransfer.files);
+            const fileInput = document.getElementById('fileInput');
+            
+            // DataTransfer 객체 생성하여 파일 추가
+            const dataTransfer = new DataTransfer();
+            files.forEach(file => dataTransfer.items.add(file));
+            fileInput.files = dataTransfer.files;
+            
+            handleFileSelect({ target: fileInput });
+        });
+    </script>
+</body>
+</html>
