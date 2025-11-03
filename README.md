@@ -41,11 +41,35 @@ npm run dev
 npm run build
 ```
 
-### 미리보기
+빌드된 파일은 `docs` 폴더에 생성됩니다.
 
+### GitHub Pages 배포
+
+1. 코드 변경 후 빌드:
 ```bash
-npm run preview
+npm run deploy
 ```
+
+2. 변경사항 커밋 및 푸시:
+```bash
+git add .
+git commit -m "Update"
+git push
+```
+
+3. GitHub 저장소 Settings → Pages에서:
+   - Source: Deploy from a branch
+   - Branch: `main` / Folder: `/docs`
+   - Save
+
+## GitHub Pages 설정 요구사항
+
+✅ **필수 체크리스트:**
+- [x] `docs/index.html` 존재
+- [x] `docs/.nojekyll` 파일 존재 (Jekyll 비활성화)
+- [x] `docs/404.html` 존재 (React Router 지원)
+- [x] 리소스 경로: 상대 경로 (`./assets/...`)
+- [x] Settings → Pages: Branch = `main`, Folder = `/docs`
 
 ## 프로젝트 구조
 
@@ -55,9 +79,9 @@ src/
   ├── layouts/        # 레이아웃 컴포넌트
   ├── pages/          # 페이지 컴포넌트
   └── utils/          # 유틸리티 함수
+docs/                 # GitHub Pages 배포용 빌드 결과물
 ```
 
 ## 라이선스
 
 ISC
-

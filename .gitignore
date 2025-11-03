@@ -28,4 +28,4 @@ dist-ssr
 
 # Old HTML files (archived)
 *.html
-docs
+# docs/ - GitHub Pages용이므로 커밋 필요 (docs/는 제외하지 않음)
